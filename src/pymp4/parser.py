@@ -332,6 +332,24 @@ class MaskedInteger(Adapter):
         return obj & 0x1F
 
 
+AVCConfigurationBox = Struct(
+    "version" / Const(Int8ub, 1),
+    "profile" / Int8ub,
+    "compatibility" / Int8ub,
+    "level" / Int8ub,
+    EmbeddedBitStruct(
+        Padding(6, pattern=b'\x01'),
+        "nal_unit_length_field" / Default(BitsInteger(2), 3),
+    ),
+    "sps" / Default(PrefixedArray(MaskedInteger(Int8ub), PascalString(Int16ub)), []),
+    "pps" / Default(PrefixedArray(Int8ub, PascalString(Int16ub)), [])
+)
+
+PixelAspectRatioBox = Struct(
+    "hSpacing" / Int32ub,
+    "vSpacing" / Int32ub
+)
+
 AVC1SampleEntryBox = Struct(
     "version" / Default(Int16ub, 0),
     "revision" / Const(Int16ub, 0),
@@ -350,17 +368,11 @@ AVC1SampleEntryBox = Struct(
     "depth" / Default(Int16ub, 24),
     "color_table_id" / Default(Int16sb, -1),
     "avc_data" / PrefixedIncludingSize(Int32ub, Struct(
-        "type" / Const(b"avcC"),
-        "version" / Const(Int8ub, 1),
-        "profile" / Int8ub,
-        "compatibility" / Int8ub,
-        "level" / Int8ub,
-        EmbeddedBitStruct(
-            Padding(6, pattern=b'\x01'),
-            "nal_unit_length_field" / Default(BitsInteger(2), 3),
-        ),
-        "sps" / Default(PrefixedArray(MaskedInteger(Int8ub), PascalString(Int16ub)), []),
-        "pps" / Default(PrefixedArray(Int8ub, PascalString(Int16ub)), [])
+        "type" / String(4, padchar=b" ", paddir="right"),
+        Embedded(Switch(this.type, {
+            b"avcC": AVCConfigurationBox,
+            b"pasp": PixelAspectRatioBox
+        }))
     ))
 )
 
@@ -375,7 +387,7 @@ SampleEntryBox = PrefixedIncludingSize(Int32ub, Struct(
         b"enca": MP4ASampleEntryBox,
         b"avc1": AVC1SampleEntryBox,
         b"encv": AVC1SampleEntryBox
-    }, "data" / GreedyBytes))
+    }, Struct("data" / GreedyBytes)))
 ))
 
 BitRateBox = Struct(
