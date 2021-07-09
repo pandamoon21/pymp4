@@ -669,7 +669,7 @@ ProtectionSystemHeaderBox = Struct(
 
 TrackEncryptionBox = Struct(
     "type" / If(this._.type != b"uuid", Const(b"tenc")),
-    "version" / Const(Int8ub, 0),
+    "version" / Default(Int8ub, 0),
     "flags" / Const(Int24ub, 0),
     "is_encrypted" / Int24ub,
     "iv_size" / Int8ub,
