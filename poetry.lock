@@ -1,6 +1,6 @@
 [[package]]
 name = "construct"
-version = "2.10.70"
+version = "2.8.8"
 description = "A powerful declarative parser/builder for binary data"
 category = "main"
 optional = false
