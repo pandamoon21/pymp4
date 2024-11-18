@@ -13,5 +13,5 @@ content-hash = "a9e83dff3919fb2214fca067351db9aa17209873b88bff5d77ce61fbaeb84046
 
 [metadata.files]
 construct = [
-    {file = "construct-2.10.70.tar.gz", hash = "sha256:4d2472f9684731e58cc9c56c463be63baa1447d674e0d66aeb5627b22f512c29"},
+    {file = "construct-2.8.8.tar.gz", hash = "sha256:1b84b8147f6fd15bcf64b737c3e8ac5100811ad80c830cb4b2545140511c4157"},
 ]
